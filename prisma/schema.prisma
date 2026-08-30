@@ -1,0 +1,104 @@
+// Prisma schema for the barbershop booking app.
+//
+// Uses SQLite so the app runs locally with zero external setup.
+// To move to PostgreSQL for production: change `provider` below to
+// "postgresql", set DATABASE_URL to your Postgres connection string,
+// then run `npx prisma migrate dev`. The models below don't use any
+// SQLite-only features, so no other changes are needed.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ShopSettings {
+  id           String  @id @default("singleton")
+  shopName     String
+  address      String
+  phone        String
+  email        String
+  aboutText    String?
+  hoursText    String?
+  heroImageUrl String?
+}
+
+model Barber {
+  id           String        @id @default(cuid())
+  name         String
+  slug         String        @unique
+  bio          String?
+  photoUrl     String?
+  specialties  String?
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  workingHours WorkingHour[]
+  timeOffs     TimeOff[]
+  appointments Appointment[]
+}
+
+model Service {
+  id              String        @id @default(cuid())
+  name            String
+  description     String?
+  durationMinutes Int
+  priceCents      Int
+  active          Boolean       @default(true)
+  appointments    Appointment[]
+}
+
+// One row per recurring shift. A barber can have more than one row for the
+// same dayOfWeek to represent a split shift (e.g. 9:00-12:00 and 13:00-18:00
+// to carve out a lunch break).
+model WorkingHour {
+  id          String @id @default(cuid())
+  barberId    String
+  barber      Barber @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  dayOfWeek   Int // 0 = Sunday ... 6 = Saturday
+  startMinute Int // minutes after midnight, e.g. 540 = 9:00am
+  endMinute   Int
+
+  @@index([barberId, dayOfWeek])
+}
+
+// One-off blocks: vacation, a personal appointment, a single-day lunch swap.
+model TimeOff {
+  id       String   @id @default(cuid())
+  barberId String
+  barber   Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  startAt  DateTime
+  endAt    DateTime
+  reason   String?
+
+  @@index([barberId, startAt])
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  barberId    String
+  barber      Barber   @relation(fields: [barberId], references: [id])
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id])
+  startAt     DateTime
+  endAt       DateTime
+  clientName  String
+  clientEmail String
+  clientPhone String
+  notes       String?
+  status      String   @default("CONFIRMED") // CONFIRMED | CANCELLED
+  manageToken String   @unique
+  createdAt   DateTime @default(now())
+
+  @@index([barberId, startAt])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+}

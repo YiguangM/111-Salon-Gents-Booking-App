@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #111111;
+  --brand: #b45309;
+  --brand-dark: #92400e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-arabic: var(--font-cairo);
+  /* Playfair Display has no Arabic glyphs, so chain Cairo as the fallback -
+     otherwise Arabic text in a `font-display` heading would silently
+     render in the browser's generic system font instead. */
+  --font-display: var(--font-playfair), var(--font-cairo);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Arabic has no italic face (Cairo is normal-weight only), so an `italic`
+   heading under the Arabic layout would be synthetically slanted by the
+   browser - not a real typographic style. Disable it there. */
+.font-arabic :where(.italic) {
+  font-style: normal;
+}
