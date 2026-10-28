@@ -32,3 +32,10 @@ body {
 .font-arabic :where(.italic) {
   font-style: normal;
 }
+
+/* Tape reels in the /music cassette player. */
+@keyframes reel-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

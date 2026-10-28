@@ -17,7 +17,9 @@ export function SiteHeader({ shopName }: { shopName: string }) {
   return (
     <header className="border-b border-black/10 bg-background text-foreground">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-        <Link href="/" className="font-display text-xl italic tracking-tight">
+        {/* dir="auto" keeps a name like "111 Salon Gents" from reordering to
+            "Salon Gents 111" in the RTL layout. */}
+        <Link href="/" dir="auto" className="font-display text-xl italic tracking-tight">
           {shopName}
         </Link>
         <nav className="hidden items-center gap-8 text-sm sm:flex">

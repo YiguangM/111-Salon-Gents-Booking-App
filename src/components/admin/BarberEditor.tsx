@@ -15,8 +15,10 @@ type Barber = {
   timeOffs: TimeOff[];
 };
 
+// A shift may end at midnight (1440), which <input type="time"> can't show,
+// so it's displayed as 00:00 and an end time of 00:00 is read back as 1440.
 function minutesToTimeInput(minutes: number): string {
-  const h = Math.floor(minutes / 60);
+  const h = Math.floor(minutes / 60) % 24;
   const m = minutes % 60;
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
@@ -71,7 +73,9 @@ export function BarberEditor({ barberId }: { barberId: string }) {
   }
 
   function updateShift(index: number, field: "startMinute" | "endMinute", value: string) {
-    setShifts((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: timeInputToMinutes(value) } : s)));
+    let minutes = timeInputToMinutes(value);
+    if (field === "endMinute" && minutes === 0) minutes = 24 * 60;
+    setShifts((prev) => prev.map((s, i) => (i === index ? { ...s, [field]: minutes } : s)));
     setHoursSaved(false);
   }
 

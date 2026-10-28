@@ -1,11 +1,11 @@
-import { getShopSettings } from "@/lib/shop";
+import { getShopSettings, SHOP_GOOGLE_MAPS_URL, SHOP_MAP_COORDINATES } from "@/lib/shop";
 import { getDictionary } from "@/lib/i18n/server";
 
 export const metadata = { title: "Location & Hours" };
 
 export default async function ContactPage() {
   const [shop, { t }] = await Promise.all([getShopSettings(), getDictionary()]);
-  const mapQuery = encodeURIComponent(shop.address);
+  const mapQuery = encodeURIComponent(SHOP_MAP_COORDINATES);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-20">
@@ -15,11 +15,23 @@ export default async function ContactPage() {
         <div>
           <h2 className="font-medium">{t.contact.address}</h2>
           <p className="mt-1 text-foreground/70">{shop.address}</p>
+          <a
+            href={SHOP_GOOGLE_MAPS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block text-sm text-brand hover:underline"
+          >
+            {t.contact.openInMaps}
+          </a>
 
           {shop.phone && (
             <>
               <h2 className="mt-6 font-medium">{t.contact.phone}</h2>
-              <p className="mt-1 text-foreground/70" dir="ltr">{shop.phone}</p>
+              <p className="mt-1 text-foreground/70" dir="ltr">
+                <a href={`tel:${shop.phone.replace(/\s/g, "")}`} className="hover:underline">
+                  {shop.phone}
+                </a>
+              </p>
             </>
           )}
 
