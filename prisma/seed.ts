@@ -6,18 +6,18 @@ const prisma = new PrismaClient();
 async function main() {
   const shopSettings = {
     shopName: process.env.SHOP_NAME ?? "111 Salon Gents",
-    address: process.env.SHOP_ADDRESS ?? "Warsan 1, Dubai, UAE",
-    // Left blank (not a loud placeholder) so the site simply omits these
+    address: process.env.SHOP_ADDRESS ?? "Russia Cluster, Warsan First, International City, Dubai, UAE",
+    phone: process.env.SHOP_PHONE ?? "+971 58 134 5304",
+    // Left blank (not a loud placeholder) so the site simply omits it
     // rather than showing fake contact info to visitors - see the
-    // conditional rendering in ContactPage/SiteFooter.
-    phone: process.env.SHOP_PHONE ?? "",
+    // conditional rendering in ContactPage.
     email: process.env.SHOP_EMAIL ?? "",
     // Left null so the homepage falls back to the translated tagline in both
     // languages (see t.home.aboutFallback) - set this via the admin
     // dashboard only if you want custom copy, in which case it will show
     // as-is regardless of which language the visitor has selected.
     aboutText: null,
-    hoursText: "Sat-Thu: 9am - 10pm\nFriday: 2pm - 10pm",
+    hoursText: "Open daily: 11:00 AM - 1:00 AM",
   };
 
   await prisma.shopSettings.upsert({
@@ -56,8 +56,7 @@ async function main() {
   }
 
   // Placeholder names/bios - replace via the admin dashboard with the
-  // shop's real barbers. Hours follow a typical Dubai salon week: open
-  // daily, with Friday starting later (after Jummah prayer).
+  // shop's real barbers. Hours are the shop's listed 11am - 1am, daily.
   // `oldSlug` lets this migrate barbers seeded under the previous
   // (fictional-example) names in place, preserving their id and any
   // appointments already booked against them.
@@ -68,7 +67,7 @@ async function main() {
       name: "Barber One",
       bio: "Specializes in fades and classic cuts.",
       specialties: "Fades, Classic Cuts",
-      shifts: uaeWeekShifts(),
+      shifts: shopWeekShifts(),
     },
     {
       oldSlug: "dana-oyelaran",
@@ -76,7 +75,7 @@ async function main() {
       name: "Barber Two",
       bio: "Loves a good beard sculpt.",
       specialties: "Beard Sculpting",
-      shifts: uaeWeekShifts(),
+      shifts: shopWeekShifts(),
     },
   ];
 
@@ -102,15 +101,13 @@ async function main() {
   console.log(`Admin login: ${adminEmail} / ${adminPassword}`);
 }
 
-// Sat-Thu: split shift with a midday break. Friday: afternoon/evening only.
-function uaeWeekShifts() {
-  const regularDays = [6, 0, 1, 2, 3, 4]; // Saturday - Thursday (JS getDay(): 0=Sun ... 6=Sat)
-  const shifts = regularDays.flatMap((dayOfWeek) => [
-    { dayOfWeek, startMinute: 9 * 60, endMinute: 14 * 60 },
-    { dayOfWeek, startMinute: 16 * 60, endMinute: 22 * 60 },
+// Open 11am - 1am every day. Shifts can't cross midnight, so each day gets
+// 11am - midnight plus 12am - 1am (the tail of the previous night).
+function shopWeekShifts() {
+  return [0, 1, 2, 3, 4, 5, 6].flatMap((dayOfWeek) => [
+    { dayOfWeek, startMinute: 0, endMinute: 60 },
+    { dayOfWeek, startMinute: 11 * 60, endMinute: 24 * 60 },
   ]);
-  shifts.push({ dayOfWeek: 5, startMinute: 14 * 60, endMinute: 22 * 60 }); // Friday
-  return shifts;
 }
 
 main()

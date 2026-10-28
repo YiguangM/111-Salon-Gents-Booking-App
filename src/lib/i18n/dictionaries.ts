@@ -34,6 +34,7 @@ const en = {
     phone: "Phone",
     email: "Email",
     hours: "Hours",
+    openInMaps: "Open in Google Maps",
   },
   book: {
     title: "Book an Appointment",
@@ -122,6 +123,7 @@ const ar: typeof en = {
     phone: "الهاتف",
     email: "البريد الإلكتروني",
     hours: "ساعات العمل",
+    openInMaps: "افتح في خرائط جوجل",
   },
   book: {
     title: "احجز موعداً",

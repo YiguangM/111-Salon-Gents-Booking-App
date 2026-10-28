@@ -16,7 +16,7 @@ export default async function HomePage() {
     <div>
       <section className="border-b border-black/10">
         <div className="mx-auto max-w-3xl px-6 py-28 text-center sm:py-36">
-          <h1 className="font-display text-5xl italic tracking-tight sm:text-6xl">{shop.shopName}</h1>
+          <h1 className="font-display text-5xl italic tracking-tight sm:text-6xl" dir="auto">{shop.shopName}</h1>
           <p className="mx-auto mt-5 max-w-lg text-lg text-foreground/70">
             {shop.aboutText ?? t.home.aboutFallback}
           </p>

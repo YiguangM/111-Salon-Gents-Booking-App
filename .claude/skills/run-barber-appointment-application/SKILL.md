@@ -93,10 +93,11 @@ end-to-end test.
 
 ## Gotchas
 
-- **Hours vary by day** (split Sat–Thu shifts with a midday break, shorter
-  Friday hours starting mid-afternoon) and admin-added time-off blocks can
-  close out a whole day, so booking a hardcoded "today" can legitimately
-  show zero slots — that's correct behavior, not a bug. The driver handles
+- **Today can have no slots left** (seeded hours are 11 AM – 1 AM daily,
+  stored as 00:00–01:00 + 11:00–24:00 shifts, and there's a 60-minute
+  booking notice) and admin-added time-off blocks can close out a whole
+  day, so booking a hardcoded "today" can legitimately show zero slots —
+  that's correct behavior, not a bug. The driver handles
   this by trying up to 8 consecutive days and using the first one with
   open slots; don't hardcode a date when extending the driver.
 - **`npm run dev &` leaves an orphaned process on port 3000 if you kill
